@@ -1,0 +1,38 @@
+apiVersion: ogen.krateo.io/v1alpha1
+kind: RestDefinition
+metadata:
+  name: event-feedback-form
+  namespace: '{{ .Release.Namespace }}'
+  annotations:
+    controller.builders.krateo.io/operations: forms
+spec:
+  oasPath: configmap://{{ .Release.Namespace }}/event-feedback-oas/openapi.yaml
+  resource:
+    kind: Form
+    verbsDescription:
+      - action: create
+        method: POST
+        path: /forms
+      - action: get
+        method: GET
+        path: /forms/{form_id}
+        fieldMapping:
+          - inCustomResource: status.id
+            inPath: form_id
+      - action: update
+        method: PUT
+        path: /forms/{form_id}
+        fieldMapping:
+          - inCustomResource: status.id
+            inPath: form_id
+      - action: delete
+        method: DELETE
+        path: /forms/{form_id}
+        fieldMapping:
+          - inCustomResource: status.id
+            inPath: form_id
+    identifiers:
+      - id
+    excludedSpecFields:
+      - id
+  resourceGroup: eventfeedback.example.io

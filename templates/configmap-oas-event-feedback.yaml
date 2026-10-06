@@ -1,0 +1,206 @@
+# info.version of the document below is pinned to v1alpha1: oasgen-provider serves each Kind
+# under the version it reads there, and a vendor bump (1.0.27 -> 1.0.28) would serve a new version and
+# prune the old one, breaking every manifest pinned to it. The vendor's own version is kept in
+# Chart.yaml as controller.builders.krateo.io/source-spec-version. The Controller Builder rewrites it on every edit.
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  labels:
+    krateo.io/managed-by: kog-builder
+  name: event-feedback-oas
+  namespace: '{{ .Release.Namespace }}'
+data:
+  openapi.yaml: |
+    openapi: 3.0.3
+    info:
+      title: Typeform Create API (forms)
+      version: v1alpha1
+      description: The four operations of Typeform's Create API that manage a form's lifecycle, written from https://www.typeform.com/developers/create/reference/ (Typeform publishes no OpenAPI document). Authenticate with a personal access token holding the forms:read and forms:write scopes.
+    servers:
+      - url: https://api.typeform.com
+    security:
+      - bearerAuth: []
+    paths:
+      /forms:
+        post:
+          operationId: createForm
+          summary: Create a form
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Form'
+          responses:
+            '201':
+              description: The form was created.
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Form'
+      /forms/{form_id}:
+        parameters:
+          - name: form_id
+            in: path
+            required: true
+            description: The form's id, returned when it is created.
+            schema:
+              type: string
+        get:
+          operationId: retrieveForm
+          summary: Retrieve a form
+          responses:
+            '200':
+              description: The form.
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Form'
+        put:
+          operationId: updateForm
+          summary: Update a form (replaces it)
+          requestBody:
+            required: true
+            content:
+              application/json:
+                schema:
+                  $ref: '#/components/schemas/Form'
+          responses:
+            '200':
+              description: The updated form.
+              content:
+                application/json:
+                  schema:
+                    $ref: '#/components/schemas/Form'
+        delete:
+          operationId: deleteForm
+          summary: Delete a form and its responses
+          responses:
+            '204':
+              description: The form was deleted.
+    components:
+      securitySchemes:
+        bearerAuth:
+          type: http
+          scheme: bearer
+      schemas:
+        Form:
+          type: object
+          required:
+            - title
+          properties:
+            id:
+              type: string
+              readOnly: true
+              description: Assigned by Typeform.
+            title:
+              type: string
+              description: The form's title, shown to respondents.
+            type:
+              type: string
+              enum:
+                - form
+                - quiz
+            settings:
+              type: object
+              properties:
+                language:
+                  type: string
+                  description: Two-letter language code, e.g. en.
+                is_public:
+                  type: boolean
+                  description: Whether the form accepts responses.
+            welcome_screens:
+              type: array
+              items:
+                type: object
+                properties:
+                  ref:
+                    type: string
+                  title:
+                    type: string
+                  properties:
+                    type: object
+                    properties:
+                      description:
+                        type: string
+                      show_button:
+                        type: boolean
+                      button_text:
+                        type: string
+            thankyou_screens:
+              type: array
+              items:
+                type: object
+                properties:
+                  ref:
+                    type: string
+                  title:
+                    type: string
+                  properties:
+                    type: object
+                    properties:
+                      description:
+                        type: string
+                      show_button:
+                        type: boolean
+                      button_text:
+                        type: string
+            fields:
+              type: array
+              description: The questions, in order.
+              items:
+                type: object
+                required:
+                  - title
+                  - type
+                properties:
+                  ref:
+                    type: string
+                    description: A stable key for the question, unique in the form.
+                  title:
+                    type: string
+                  type:
+                    type: string
+                    enum:
+                      - short_text
+                      - long_text
+                      - opinion_scale
+                      - rating
+                      - multiple_choice
+                      - yes_no
+                      - email
+                  properties:
+                    type: object
+                    properties:
+                      description:
+                        type: string
+                      steps:
+                        type: integer
+                        description: opinion_scale and rating only.
+                      start_at_one:
+                        type: boolean
+                      shape:
+                        type: string
+                        description: rating only, e.g. star.
+                      allow_multiple_selection:
+                        type: boolean
+                      choices:
+                        type: array
+                        items:
+                          type: object
+                          properties:
+                            label:
+                              type: string
+                  validations:
+                    type: object
+                    properties:
+                      required:
+                        type: boolean
+            _links:
+              type: object
+              readOnly: true
+              properties:
+                display:
+                  type: string
+                  description: The public link respondents open.
