@@ -3,7 +3,7 @@ name: event-feedback
 description: Krateo controller for Typeform Create API (forms), served in eventfeedback.example.io.
 icon: https://raw.githubusercontent.com/krateo-platformops/.github/main/brand/logo.svg
 type: application
-version: 0.1.0
+version: 0.1.1
 annotations:
   controller.builders.krateo.io/api-group: eventfeedback.example.io
   controller.builders.krateo.io/base-url: https://api.typeform.com
