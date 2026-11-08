@@ -8,3 +8,11 @@ annotations:
   controller.builders.krateo.io/api-group: eventfeedback.example.io
   controller.builders.krateo.io/base-url: https://api.typeform.com
   controller.builders.krateo.io/source-spec-version: '1.0'
+  krateo.io/source-repo: krateo-blueprints/event-feedback
+keywords:
+  - typeform
+  - forms
+  - controller
+  - rest-api
+sources:
+  - https://github.com/krateo-blueprints/event-feedback
